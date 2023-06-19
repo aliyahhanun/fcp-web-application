@@ -2,6 +2,7 @@ package main
 
 import (
 	"a21hc3NpZ25tZW50/client"
+	cfg "a21hc3NpZ25tZW50/config"
 	"a21hc3NpZ25tZW50/db"
 	"a21hc3NpZ25tZW50/handler/api"
 	"a21hc3NpZ25tZW50/handler/web"
@@ -42,8 +43,10 @@ var Resources embed.FS
 
 func main() {
 	gin.SetMode(gin.ReleaseMode) //release
-
+	
 	wg := sync.WaitGroup{}
+	
+	cfg.Init()
 
 	wg.Add(1)
 	go func() {
@@ -61,13 +64,21 @@ func main() {
 		}))
 		router.Use(gin.Recovery())
 
+		// dbCredential := model.Credential{
+		// 	Host:         "localhost",
+		// 	Username:     "postgres",
+		// 	Password:     "nunhanun02",
+		// 	DatabaseName: "assignment_api",
+		// 	Port:         5432,
+		// 	Schema:       "public",
+		// }
+
 		dbCredential := model.Credential{
-			Host:         "localhost",
-			Username:     "postgres",
-			Password:     "nunhanun02",
-			DatabaseName: "assignment_api",
-			Port:         5432,
-			Schema:       "public",
+			Host:         cfg.Config.DBHost,
+			Username:     cfg.Config.DBUsername,
+			Password:     cfg.Config.DBPassword,
+			DatabaseName: cfg.Config.DBName,
+			Port:         cfg.Config.DBPort,
 		}
 
 		conn, err := db.Connect(&dbCredential)
@@ -81,7 +92,8 @@ func main() {
 		router = RunClient(conn, router, Resources)
 
 		fmt.Println("Server is running on port 8080")
-		err = router.Run(":8080")
+		// err = router.Run(":8080")
+		err = router.Run(":" + cfg.Config.AppPort)
 		if err != nil {
 			panic(err)
 		}
