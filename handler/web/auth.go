@@ -71,6 +71,7 @@ func (a *authWeb) LoginProcess(c *gin.Context) {
 		})
 
 		c.Redirect(http.StatusSeeOther, "/client/dashboard")
+		c.Redirect(http.StatusOK, "/client/dashboard")
 	} else {
 		c.Redirect(http.StatusSeeOther, "/client/login")
 	}
