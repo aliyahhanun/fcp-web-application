@@ -79,6 +79,7 @@ func main() {
 			Password:     cfg.Config.DBPassword,
 			DatabaseName: cfg.Config.DBName,
 			Port:         cfg.Config.DBPort,
+			Schema: 	  "public",
 		}
 
 		conn, err := db.Connect(&dbCredential)
