@@ -14,6 +14,7 @@ import (
 
 type CategoryWeb interface {
 	Category(c *gin.Context)
+	CategoryAddProcess(c *gin.Context)
 }
 
 type categoryWeb struct {
@@ -69,5 +70,34 @@ func (c *categoryWeb) Category(ctx *gin.Context) {
 	err = t.Execute(ctx.Writer, dataTemplate)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, model.ErrorResponse{Error: err.Error()})
+	}
+}
+
+func (c *categoryWeb) CategoryAddProcess(ctx *gin.Context) {
+	var email string
+	if temp, ok := ctx.Get("email"); ok {
+		if contextData, ok := temp.(string); ok {
+			email = contextData
+		}
+	}
+
+	session, err := c.sessionService.GetSessionByEmail(email)
+	if err != nil {
+		ctx.Redirect(http.StatusSeeOther, "/client/modal?status=error&message="+err.Error())
+		return
+	}
+
+	categoryName := ctx.Request.FormValue("category_name")
+
+	status, err := c.categoryClient.AddCategory(session.Token, categoryName)
+	if err != nil {
+		ctx.Redirect(http.StatusSeeOther, "/client/modal?status=error&message="+err.Error())
+		return
+	}
+
+	if status == 201 {
+		ctx.Redirect(http.StatusSeeOther, "/client/login")
+	} else {
+		ctx.Redirect(http.StatusSeeOther, "/client/category")
 	}
 }
