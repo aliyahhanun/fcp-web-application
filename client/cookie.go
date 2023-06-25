@@ -19,7 +19,7 @@ func GetClientWithCookie(token string, cookies ...*http.Cookie) (*http.Client, e
 
 	jar.SetCookies(&url.URL{
 		Scheme: "https",
-		Host:   "https://fcp-web-application-production-68f4.up.railway.app/",
+		Host:   "fcp-web-application-production-68f4.up.railway.app",
 	}, cookies)
 
 	c := &http.Client{
